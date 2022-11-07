@@ -2,6 +2,8 @@ import { createContext, ReactNode, useState, useEffect } from 'react';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
+import * as SecureStore from 'expo-secure-store';
+
 import { api } from '../services/api';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -53,6 +55,8 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
         access_token,
       });
 
+      await SecureStore.setItemAsync('app-token', tokenResponse.data.token);
+
       api.defaults.headers.common[
         'Authorization'
       ] = `Bearer ${tokenResponse.data.token}`;
@@ -67,6 +71,43 @@ export function AuthContextProvider({ children }: AuthProviderProps) {
       setIsUserLoading(false);
     }
   }
+
+  async function getTokenInSecureStore() {
+    const token = await SecureStore.getItemAsync('app-token');
+
+    if (token) {
+      return token;
+    } else {
+      return null;
+    }
+  }
+
+  async function SignInWithTokenInSecureStore() {
+    const token = await getTokenInSecureStore();
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      setIsUserLoading(true);
+
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      const userInfoResponse = await api.get('/me');
+
+      setUser(userInfoResponse.data.user);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    } finally {
+      setIsUserLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    SignInWithTokenInSecureStore();
+  }, []);
 
   useEffect(() => {
     if (response?.type === 'success' && response.authentication?.accessToken) {
