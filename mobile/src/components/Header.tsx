@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { Text, HStack, Box } from 'native-base';
-import { CaretLeft, Export } from 'phosphor-react-native';
+import { CaretLeft, Export, Gear } from 'phosphor-react-native';
 
 import { ButtonIcon } from './ButtonIcon';
 
@@ -8,14 +8,18 @@ interface Props {
   title: string;
   showBackButton?: boolean;
   showShareButton?: boolean;
+  showConfigButton?: boolean;
   onShare?: () => void;
+  toConfig?: () => void;
 }
 
 export function Header({
   title,
   showBackButton = false,
   showShareButton = false,
+  showConfigButton = false,
   onShare,
+  toConfig,
 }: Props) {
   const { navigate } = useNavigation();
   const EmptyBoxSpace = () => <Box w={6} h={6} />;
@@ -47,9 +51,13 @@ export function Header({
 
         {showShareButton ? (
           <ButtonIcon icon={Export} onPress={onShare} />
-        ) : (
+        ) : showConfigButton ? null : (
           <EmptyBoxSpace />
         )}
+
+        {showConfigButton ? (
+          <ButtonIcon icon={Gear} onPress={toConfig} />
+        ) : null}
       </HStack>
     </HStack>
   );

@@ -8,12 +8,14 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 
 import { api } from '../services/api';
+import { useNavigation } from '@react-navigation/native';
 
 export function New() {
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
+  const { navigate } = useNavigation();
 
   async function handlePoolCreate() {
     if (!title.trim()) {
@@ -56,7 +58,11 @@ export function New() {
 
   return (
     <VStack flex={1} bgColor="gray.900">
-      <Header title="Criar novo bolão" />
+      <Header
+        title="Criar novo bolão"
+        showConfigButton
+        toConfig={() => navigate('config')}
+      />
       <VStack mt={8} mx={5} alignItems="center">
         <Logo />
 

@@ -47,7 +47,11 @@ export function Pools() {
 
   return (
     <VStack flex={1} bgColor="gray.900">
-      <Header title="Meus bolões" />
+      <Header
+        title="Meus bolões"
+        showConfigButton
+        toConfig={() => navigate('config')}
+      />
       <VStack
         mt={6}
         mx={5}
